@@ -1,7 +1,7 @@
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/donnigundala/dg-core v1.8.0 h1:LiW/Fh9flSPyBsvTiy+GFX2nSq6IconaHwNFd6HzqGM=
-github.com/donnigundala/dg-core v1.8.0/go.mod h1:bfMAqxAKsdB3WNj4IOUrfwDUtb3H2cUxcRI08TbA1aU=
+github.com/donnigundala/dg-core v1.9.0 h1:9Ywym34eY7ClE1TWHtZemcefNKdQjoNegPKwFF+4wdU=
+github.com/donnigundala/dg-core v1.9.0/go.mod h1:xuM6YNPH99tezIOtOdfv7O6lvW3GRPBgaexRr88ymCs=
 github.com/gabriel-vasile/mimetype v1.4.11 h1:AQvxbp830wPhHTqc1u7nzoLT+ZFxGY7emj5DR5DYFik=
 github.com/gabriel-vasile/mimetype v1.4.11/go.mod h1:d+9Oxyo1wTzWdyVUPMmXFvp4F9tea18J8ufA774AB3s=
 github.com/go-playground/assert/v2 v2.2.0 h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=

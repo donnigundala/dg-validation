@@ -3,7 +3,7 @@ module github.com/donnigundala/dg-validation
 go 1.25.0
 
 require (
-	github.com/donnigundala/dg-core v1.8.0
+	github.com/donnigundala/dg-core v1.9.0
 	github.com/go-playground/validator/v10 v10.29.0
 	github.com/google/uuid v1.6.0
 )

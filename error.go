@@ -1,4 +1,4 @@
-package validation
+package dgvalidation
 
 // Error is a custom error type that holds field-specific validation errors.
 type Error struct {

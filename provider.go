@@ -1,4 +1,4 @@
-package validation
+package dgvalidation
 
 import (
 	"github.com/donnigundala/dg-core/contracts/foundation"
@@ -10,14 +10,21 @@ type ValidationServiceProvider struct {
 	Options []Option
 }
 
+// NewValidationServiceProvider creates a new validation service provider.
+func NewValidationServiceProvider(options ...Option) *ValidationServiceProvider {
+	return &ValidationServiceProvider{
+		Options: options,
+	}
+}
+
 // Name returns the plugin name.
 func (p *ValidationServiceProvider) Name() string {
-	return "validation"
+	return Binding
 }
 
 // Version returns the plugin version.
 func (p *ValidationServiceProvider) Version() string {
-	return "1.0.0"
+	return Version
 }
 
 // Dependencies returns the list of dependencies.
@@ -27,7 +34,7 @@ func (p *ValidationServiceProvider) Dependencies() []string {
 
 // Register registers the validation services into the container.
 func (p *ValidationServiceProvider) Register(app foundation.Application) error {
-	app.Singleton("validator", func() (interface{}, error) {
+	app.Singleton(Binding, func() (interface{}, error) {
 		return NewValidator(p.Options...), nil
 	})
 

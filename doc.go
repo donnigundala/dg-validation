@@ -32,4 +32,4 @@ Register a custom validation function:
 	    return fl.Field().String() == "foo"
 	})
 */
-package validation
+package dgvalidation
