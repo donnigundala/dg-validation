@@ -1,14 +1,15 @@
 # DG Validation
 
-A production-ready validation service wrapper for Go, based on the excellent `github.com/go-playground/validator/v10`. It provides a structured, extensible way to handle validation in your application with built-in custom validators and localized error messages.
+A powerful, production-ready validation service wrapper for Go, based on `github.com/gookit/validate`. It provides a Laravel-inspired validation experience with "FormRequest" patterns, database-aware rules, and zero-boilerplate integration.
 
 ## Features
 
--   **Standard Validators**: Full access to all `go-playground/validator` tags.
--   **Custom Validators**: Built-in support for common needs (UUID, Slug, Phone, Password strength, etc.).
--   **Localization**: Context-aware error messages with support for multiple locales.
--   **Framework Integration**: includes a `ValidationServiceProvider` for seamless integration with `dg-core` applications.
--   **Structured Errors**: Returns a structured error object containing a map of field-specific messages.
+-   **Standard Validators**: Full access to all `gookit/validate` tags.
+-   **Pipes-based Syntax**: Clean `validate:"required|email|minLen:8"` syntax.
+-   **FormRequest Pattern**: Support for class-based validation with `Messages()` and `Scene()` methods on request structs.
+-   **Database Rules**: Built-in `unique` and `exists` rules that automatically resolve your DB connection.
+-   **Zero-Boilerplate Gin Helper**: Single-line validation in controllers with automatic 422 error responses.
+-   **Custom Validators**: Built-in support for UUID, Slug, Phone, Password strength, etc.
 
 ## Installation
 
@@ -18,99 +19,85 @@ go get github.com/donnigundala/dg-validation
 
 ## Quick Start
 
-### Basic Usage
+### Basic Struct Validation
 
 ```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"github.com/donnigundala/dg-validation"
-)
-
 type User struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
-	Age   int    `json:"age" validate:"gte=18"`
+    Name  string `json:"name" validate:"required|minLen:3"`
+    Email string `json:"email" validate:"required|email"`
 }
 
-func main() {
-	v := validation.NewValidator()
-	ctx := context.Background()
+v := dgvalidation.NewValidator()
+err := v.ValidateStruct(ctx, &user)
+```
 
-	user := User{
-		Name:  "John Doe",
-		Email: "invalid-email",
-		Age:   15,
-	}
+### FormRequest Pattern (Recommended)
 
-	err := v.ValidateStruct(ctx, &user)
-	if err != nil {
-		if vErr, ok := err.(*validation.Error); ok {
-			for field, msg := range vErr.Errors {
-				fmt.Printf("%s: %s\n", field, msg)
-			}
-		}
-	}
+Define your request with rules and custom messages:
+
+```go
+type CreateUserRequest struct {
+    Name     string `validate:"required|minLen:2" message:"name.required: Name is mandatory"`
+    Email    string `validate:"required|email|unique:users,email" message:"email.unique: Email already taken"`
+    Password string `validate:"required|password"`
+}
+
+func (f CreateUserRequest) Messages() map[string]string {
+    return validate.MS{
+        "required": "The {field} field is required.",
+    }
 }
 ```
 
-### Registered Custom Validators
+Then use it in your Gin controller:
+
+```go
+func Store(c *gin.Context) {
+    var req CreateUserRequest
+    if !dgvalidation.Validate(c, &req) {
+        return // 422 Unprocessable Entity sent automatically
+    }
+    
+    // Proceed with validated data...
+}
+```
+
+## Database Validation Rules
+
+The following rules are available if the `dg-database` plugin is registered:
+
+| Tag | Syntax | Description |
+| :--- | :--- | :--- |
+| `unique` | `unique:table,column[,ignoreColumn,ignoreValue]` | Checks if value is unique in the table. |
+| `exists` | `exists:table,column[,extraColumn,extraValue]` | Checks if value exists in the table. |
+
+## Built-in Custom Validators
 
 | Tag | Description |
 | :--- | :--- |
 | `uuid` | Validates that the string is a valid UUID. |
-| `slug` | Validates a URL-friendly slug (lowercase, numbers, hyphens). |
+| `slug` | Validates a URL-friendly slug. |
 | `phone` | Validates basic phone number formats. |
-| `password` | Enforces strength: min 8 chars, 1 upper, 1 lower, 1 digit. |
-| `username` | Validates username (3-20 chars, alphanumeric, _, -). |
-| `alpha_space` | Allows only letters and spaces. |
+| `password` | Enforces strength (8+ chars, upper, lower, digit). |
+| `username` | Validates alphanumeric username (3-20 chars). |
+| `alpha_space`| Allows only letters and spaces. |
 | `no_sql` | Basic SQL injection pattern detection. |
 | `no_xss` | Basic XSS pattern detection. |
-| `color_hex` | Validates hex color codes (e.g., #FFF or #FFFFFF). |
-| `timezone` | Validates basic timezone strings (e.g., UTC, America/New_York). |
 
 ## Advanced Configuration
 
-### Using the Service Provider
+### Service Provider
 
-In a `dg-core` application, you can register the validation service in your bootstrap process:
+In a `dg-core` application, the validator is automatically registered. You can customize it via options:
 
 ```go
-import (
-    "github.com/donnigundala/dg-validation"
-)
-
-// In your app registration
-app.Register(&validation.ValidationServiceProvider{
-    Options: []validation.Option{
-        validation.WithDefaultLocale("en"),
-        validation.WithFieldNameTag("json"),
+app.Register(&dgvalidation.ValidationServiceProvider{
+    Options: []dgvalidation.Option{
+        dgvalidation.WithStopOnError(true),
+        dgvalidation.WithSkipOnEmpty(true),
     },
 })
 ```
-
-### Localization
-
-You can provide localized messages for your validation tags:
-
-```go
-v := validation.NewValidator(
-    validation.WithLocaleMessages("id", map[string]string{
-        "required": "harus diisi",
-        "email":    "format email tidak valid",
-    }),
-)
-
-// Use the context to specify the locale
-ctx := validation.ToContext(context.Background(), "id")
-err := v.ValidateStruct(ctx, &model)
-```
-
-## Contributing
-
-See our contributing guidelines for details on how to submit pull requests.
 
 ## License
 
