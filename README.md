@@ -69,7 +69,8 @@ The following rules are available if the `dg-database` plugin is registered:
 | Tag | Syntax | Description |
 | :--- | :--- | :--- |
 | `unique` | `unique:table,column[,ignoreColumn,ignoreValue]` | Checks if value is unique in the table. |
-| `exists` | `exists:table,column[,extraColumn,extraValue]` | Checks if value exists in the table. |
+| `unique_multi` | `unique_multi:table,column[,extraColumn,extraValue...]` | Checks uniqueness with extra conditions. |
+| `exists` | `exists:table,column[,extraColumn,extraValue...]` | Checks if value exists in the table. |
 
 ## Built-in Custom Validators
 
