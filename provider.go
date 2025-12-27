@@ -45,7 +45,11 @@ func (p *ValidationServiceProvider) Register(app foundation.Application) error {
 // Boot boots the validation services.
 func (p *ValidationServiceProvider) Boot(app foundation.Application) error {
 	// Try to resolve database and inject it into validators
-	if dbInstance, err := app.Make("database"); err == nil {
+	if app.Bound("database") {
+		dbInstance, err := app.Make("database")
+		if err != nil {
+			return nil // Should not happen if Bound returned true, but safe to skip
+		}
 		// Use reflection to get the *gorm.DB from the manager if needed
 		// For now, we assume the manager has a way to get the default connection.
 		// In our dg-database implementation, the manager is the primary binding.

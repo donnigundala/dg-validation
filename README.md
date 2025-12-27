@@ -89,15 +89,38 @@ The following rules are available if the `dg-database` plugin is registered:
 
 ### Service Provider
 
-In a `dg-core` application, the validator is automatically registered. You can customize it via options:
+Register the validator in your application bootstrap:
 
 ```go
-app.Register(&dgvalidation.ValidationServiceProvider{
-    Options: []dgvalidation.Option{
+package main
+
+import (
+    "github.com/donnigundala/dg-core/foundation"
+    "github.com/donnigundala/dg-validation"
+)
+
+func main() {
+    app := foundation.New(".")
+    
+    // Register with optional configuration
+    app.Register(dgvalidation.NewValidationServiceProvider(
         dgvalidation.WithStopOnError(true),
-        dgvalidation.WithSkipOnEmpty(true),
-    },
-})
+    ))
+    
+    app.Start()
+}
+```
+
+### Integration via InfrastructureSuite
+In your `bootstrap/app.go`, the validation provider is typically part of the `AppSuite` or registered directly:
+
+```go
+func AppSuite() []foundation.ServiceProvider {
+	return []foundation.ServiceProvider{
+		dgvalidation.NewValidationServiceProvider(),
+		// ... other app-level providers
+	}
+}
 ```
 
 ## License
